@@ -1,0 +1,6 @@
+[general]
+name=Next Stop BVG
+description=Shows the most nearby station of BVG (Berlin public transport)
+author=Hollul
+icon=busstop.svg
+version=1.0
