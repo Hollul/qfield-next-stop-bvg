@@ -8,6 +8,7 @@ import Theme
 Item {
   id: nextBvgStopPlugin
 
+  // Set references
   property var mainWindow: iface.mainWindow()
   property var positionSource: iface.findItemByObjectName('positionSource')
 
@@ -15,6 +16,7 @@ Item {
     iface.addItemToPluginsToolbar(pluginButton)
   }
 
+  // Button to get nearest station
   QfToolButton {
     id: pluginButton
     iconSource: 'busstop_sign.svg'
@@ -26,26 +28,32 @@ Item {
     }
   }
 
+  // Function to call BVG API to get nearest station details
   function fetchNextBVGStop() {
+
+    // Check if position is available, otherwise return
     if (!positionSource) {
-      mainWindow.displayToast("Position nicht verfügbar.")
+      mainWindow.displayToast('Position nicht verfügbar.')
       return
     }
 
+    // Get current position
     let coordinate = positionSource.positionInformation
 
+    // Check coordinate validity
     if (!coordinate.longitudeValid && !coordinate.latitudeValid) {
-      mainWindow.displayToast("Ungültige Position.")
+      mainWindow.displayToast('Ungültige Position.')
       return
     }
 
+    // Save latitude and longitude
     let lat = coordinate.latitude
     let lon = coordinate.longitude
 
-    console.log("Aktuelle Koordinaten:", lat, lon)
-
+    // URL for API request, poplated with current position latitude and longitude
     let url = `https://v6.bvg.transport.rest/locations/nearby?latitude=${ lat }&longitude=${ lon }&results=1&linesOfStops=true`
 
+    // Send request
     let request = new XMLHttpRequest()
     request.onreadystatechange = function() {
       if (request.readyState === XMLHttpRequest.DONE) {
@@ -58,19 +66,20 @@ Item {
               let distance = station.distance
               mainWindow.displayToast(`Nächstgelegene Station:\n${ name }\n(${ distance } m entfernt)`)
             } else {
-              mainWindow.displayToast("Keine Station gefunden.")
+              mainWindow.displayToast('Keine Station gefunden.')
             }
           } catch (e) {
             console.error(e)
-            mainWindow.displayToast("Fehler bei der Antwortverarbeitung.")
+            mainWindow.displayToast('Fehler bei der Antwortverarbeitung.')
           }
         } else {
-          mainWindow.displayToast("Fehler beim Abrufen der Daten.")
+          mainWindow.displayToast('Fehler beim Abrufen der Daten.')
         }
       }
     }
 
-    request.open("GET", url)
+    request.open('GET', url)
     request.send()
+
   }
 }
