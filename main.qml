@@ -41,7 +41,7 @@ Item {
     let coordinate = positionSource.positionInformation
 
     // Check coordinate validity
-    if (!coordinate.longitudeValid && !coordinate.latitudeValid) {
+    if (!coordinate.longitudeValid || !coordinate.latitudeValid) {
       mainWindow.displayToast('Ungültige Position.')
       return
     }
