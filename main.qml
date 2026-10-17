@@ -51,7 +51,7 @@ Item {
     let lon = coordinate.longitude
 
     // URL for API request, poplated with current position latitude and longitude
-    let url = `https://v6.bvg.transport.rest/locations/nearby?latitude=${ lat }&longitude=${ lon }&results=1&linesOfStops=true`
+    let url = `https://v6.bvg.transport.rest/locations/nearby?latitude=${ encodeURIComponent(lat) }&longitude=${ encodeURIComponent(lon) }&results=1&linesOfStops=true`
 
     // Send request
     let request = new XMLHttpRequest()
@@ -76,6 +76,17 @@ Item {
           mainWindow.displayToast('Fehler beim Abrufen der Daten.')
         }
       }
+    }
+
+    // Add timeout to prevent request taking forever
+    request.timeout = 10000
+    request.ontimeout = function() {
+      mainWindow.displayToast('Zeitüberschreitung bei der Anfrage. Bitte erneut versuchen.')
+    }
+
+    // Show error when request fails
+    request.onerror = function() {
+      mainWindow.displayToast('Netzwerkfehler. Bitte die Verbindung überprüfen.')
     }
 
     request.open('GET', url)
